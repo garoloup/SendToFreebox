@@ -1,0 +1,49 @@
+{
+
+  "manifest_version": 2,
+  "name": "SendToFreebox",
+  "version": "0.1",
+  "description": "Send a url to freebox downloads",
+  "default_locale": "en",
+  "browser_specific_settings": {
+    "gecko": {
+      "strict_min_version": "57.0"
+    }
+  },
+
+  "icons": {
+    "48": "icons/48_download.png",
+    "96": "icons/96_download.png"
+  },
+
+    "options_ui": {
+    "page": "popup/Configure_QNAP_Access.html"
+  },
+
+"permissions": [
+    "menus",
+    "contextMenus",
+    "storage",
+    "http://*/",
+    "https://*/"
+],
+
+"applications": {
+    "gecko": {
+      "id": "SendToQnap@SendToQnap.com"
+    }
+  },
+
+
+  "browser_action": {
+    "default_icon": "icons/32_download.png",
+    "default_title": "Send To Freebox",
+    "default_popup": "popup/Configure_QNAP_Access.html"
+  },
+
+
+"background":  {
+  "scripts": ["SendLink.js", "jsSHA/sha1.js"]
+    }
+
+}
