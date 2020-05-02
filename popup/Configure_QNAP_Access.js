@@ -132,9 +132,11 @@ function restoreOptions() {
 function initPage()
 {
   restoreOptions();
+  console.log("Restore Settings launched");
 
   if (api_base_url === "" || api_major_version_body === "" || api_major_version === "")
   {
+    console.log("Missing Freebox api info: test connection with getapiversion");
     testConnection();
   }
 }
@@ -242,6 +244,11 @@ function testConnection()
               showError("Freebox Server not found");
             }
 
+          }
+          else {
+            {
+              showError("Request not sent: Add freebox root CA certificate");
+            }
           }
       });
 
