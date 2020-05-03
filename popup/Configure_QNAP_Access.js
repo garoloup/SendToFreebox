@@ -165,6 +165,13 @@ document.querySelector("#SettingsMenu").addEventListener("click", toggleHideMenu
 
 
 //==================
+function showMessage(msg)
+{
+  console.log(msg);
+  document.querySelector("#ErrMsg").textContent = msg;
+  chrome.browserAction.setBadgeText({text:"Msg"});
+}
+
 function showError(msg)
 {
   console.log(msg);
@@ -205,39 +212,47 @@ function testConnection()
      var data="";
     var xhr = new XMLHttpRequest();
 
-    clearError();
+//    clearError();
 
   //        xhr.withCredentials = true;
 
     xhr.addEventListener("readystatechange", function() {
-          if(this.readyState === 4) {
-            console.log(this.responseText);
-            var jsonData = JSON.parse(this.responseText);
-
-            //check JSON parsing is valid
-            if (typeof jsonData === "object" && jsonData !== null )
+          console.log(`testConnection readyState ${this.readyState} status ${this.status} statusText ${this.statusText}`);
+          if (this.readyState === 4 ) {
+            if ( this.status === 200)
             {
-              console.log("Freebox found");
-              NASHostname = jsonData.device_name;
-              NASDisplayName = jsonData.box_model_name;
-              NASPortInfo = jsonData.https_port;
-              NASsecure = jsonData.https_available;
-              if (NASsecure)
+              console.log(this.responseText);
+              var jsonData = JSON.parse(this.responseText);
+
+              //check JSON parsing is valid
+              if (typeof jsonData === "object" && jsonData !== null )
               {
-                NASprotocol = "https";
+                console.log("Freebox found");
+                NASHostname = jsonData.device_name;
+                NASDisplayName = jsonData.box_model_name;
+                NASPortInfo = jsonData.https_port;
+                NASsecure = jsonData.https_available;
+                if (NASsecure)
+                {
+                  NASprotocol = "https";
+                }
+                else {
+                  NASprotocol = "http";
+                }
+
+
+                api_base_url = jsonData.api_base_url ;
+                api_major_version_body = jsonData.api_version.split(".")[0];
+                api_major_version = "v"+api_major_version_body;
+                console.log("api "+api_major_version_body+" => "+api_base_url+api_major_version);
+
+                changeNASInfo(NASHostname+" "+NASDisplayName+" (api "+api_major_version+") ");
+
               }
-              else {
-                NASprotocol = "http";
+              else
+              {
+                showError("Freebox Server not valid respond");
               }
-
-
-              api_base_url = jsonData.api_base_url ;
-              api_major_version_body = jsonData.api_version.split(".")[0];
-              api_major_version = "v"+api_major_version_body;
-              console.log("api "+api_major_version_body+" => "+api_base_url+api_major_version);
-
-              changeNASInfo(NASHostname+" "+NASDisplayName+" (api "+api_major_version+") on port "+NASPortInfo);
-
             }
             else
             {
@@ -245,18 +260,13 @@ function testConnection()
             }
 
           }
-          else {
-            {
-              showError("Request not sent: Add freebox root CA certificate");
-            }
-          }
       });
 
       console.log("Discover Freebox request");
       var requete = NASprotocol+"://"+NASaddr+"/api_version";
       console.log("Discover api Freebox Request :"+requete);
       xhr.open("GET", requete);
-     xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.setRequestHeader("Content-Type", "application/json");
 
       xhr.send(data);
 }
@@ -376,16 +386,16 @@ function AssociateToFreebox() {
 //        xhr.withCredentials = true;
 
     xhr.addEventListener("readystatechange", function() {
-        if(this.readyState === 4) {
-          console.log(this.responseText);
+      console.log(this.responseText);
+        if(this.readyState === 4 && this.status === 200 ) {
           var jsonData = JSON.parse(this.responseText);
           if (jsonData.success === true)
           {
             console.log("app_token=> "+jsonData.result.app_token);
             NASpassword = jsonData.result.app_token;
             chrome.storage.local.set({
-              NASpassword: NASpassword
-            });
+               NASpassword: NASpassword
+             });
             console.log("track id=> "+jsonData.result.track_id);
             NAStrackid = jsonData.result.track_id;
             chrome.storage.local.set({
@@ -417,11 +427,12 @@ Login into NAS and get SID for next step
 */
 function WaitAppToken(track_id) {
     var xhr = new XMLHttpRequest();
+    showMessage("Confirm on Freebox Server to associate");
 
 //        xhr.withCredentials = true;
 
     xhr.addEventListener("readystatechange", function() {
-        if(this.readyState === 4) {
+        if(this.readyState === 4 && this.status === 200) {
           console.log(this.responseText);
           var jsonData = JSON.parse(this.responseText);
           if (jsonData.success === true)
@@ -432,8 +443,29 @@ function WaitAppToken(track_id) {
               console.log("Again track status=> ");
               setTimeout( WaitAppToken, 500, track_id);
             }
-            else {
+            else if (jsonData.result.status === "granted"){
+              // chrome.storage.local.set({
+              //   NASpassword: NASpassword
+              // });
+              showMessage("Freebox Server associated !");
               LogGetChallenge();
+            }
+            else {
+              console.log("WaitAppToken clear token: err = "+jsonData.result.status);
+              NASpassword ="";
+              chrome.storage.local.set({
+                NASpassword: ""
+              });
+
+              if (jsonData.result.status === "timeout"){
+                showError("Too long to associate !");
+              }
+              else if (jsonData.result.status === "denied"){
+                showError("Denied Authorization !");
+              }
+              else if (jsonData.result.status === "unknown"){
+                showError("Associato failure unknown (invalid or revoked token)");
+              }
             }
 
           }
@@ -469,21 +501,29 @@ function LogGetChallenge() {
 //    xhr.withCredentials = true;
 
     xhr.addEventListener("readystatechange", function() {
-        if(this.readyState === 4) {
+        if(this.readyState === 4 ) {
           console.log(this.responseText);
-          var jsonData = JSON.parse(this.responseText);
-          if (jsonData.success === true)
+          if (this.status === 200)
           {
-            console.log("challenge="+jsonData.result.challenge);
-            app_challenge = jsonData.result.challenge;
+            var jsonData = JSON.parse(this.responseText);
+            if (jsonData.success === true)
+            {
+              console.log("challenge="+jsonData.result.challenge);
+              app_challenge = jsonData.result.challenge;
 
-            LogSession(app_challenge);
+              LogSession(app_challenge);
+            }
+            else
+            {
+              showError("Freebox challenge not received !")
+            }
           }
           else
           {
             showError("Freebox challenge not received !")
           }
         }
+
     });
 
     console.log("Lancement Freebox get Challenge with Login request");
@@ -547,7 +587,7 @@ function LogSession(app_challenge) {
 
           }
           else
-            showError("Failed to get Sesson token")
+            showError("Failed to get Session token")
 
         }
     });
