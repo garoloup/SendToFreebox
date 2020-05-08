@@ -363,6 +363,9 @@ function addURL(sid, url) {
     console.log("SID="+sid);
     console.log("URL="+url);
 
+    // to test error case
+    //  url="for error case";
+
     var urlQNAP = url.replace(/\//g,"%2F");
     urlQNAP = urlQNAP.replace(/:/,"%3A");
     console.log("urlQNAP="+urlQNAP);
@@ -379,7 +382,21 @@ function addURL(sid, url) {
 
     xhr.addEventListener("readystatechange", function() {
         if(this.readyState === 4) {
-            console.log(this.responseText);
+          console.log(this.responseText);
+          var jsonData = JSON.parse(this.responseText);
+          if (jsonData.success === true)
+            {
+              showMessage("+1");
+              // Clear badge in 5s
+              setTimeout( clearMessage, 5000);
+            }
+            else {
+              {
+                showError("Err");
+                // Clear badge in 5s
+                setTimeout( clearError, 5000);
+              }
+            }
         }
     });
 
@@ -395,4 +412,37 @@ function addURL(sid, url) {
     console.log(xhr);
     xhr.send(data);
 
+    }
+
+
+    //==================
+    function showMessage(msg)
+    {
+      console.log(msg);
+// To replace with err storage as popup not present
+//      document.querySelector("#ErrMsg").textContent = msg;
+      chrome.browserAction.setBadgeText({text:msg});
+    }
+
+    function showError(msg)
+    {
+      console.log(msg);
+//      document.querySelector("#ErrMsg").textContent = msg;
+      chrome.browserAction.setBadgeText({text:msg});
+    }
+
+    function clearError()
+    {
+      console.log("Clear Error");
+//      document.querySelector("#ErrMsg").textContent = "";
+      chrome.browserAction.setBadgeText({text:""});
+//      document.querySelector("#NASpasswordLabel").style.color = "black";
+    }
+
+    function clearMessage()
+    {
+      console.log("Clear Message");
+//      document.querySelector("#ErrMsg").textContent = "";
+      chrome.browserAction.setBadgeText({text:""});
+//      document.querySelector("#NASpasswordLabel").style.color = "black";
     }
