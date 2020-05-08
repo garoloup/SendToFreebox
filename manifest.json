@@ -2,7 +2,7 @@
 
   "manifest_version": 2,
   "name": "SendToFreebox",
-  "version": "1.0",
+  "version": "1.1",
   "description": "Send a url to freebox downloads",
   "default_locale": "en",
   "browser_specific_settings": {
