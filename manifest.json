@@ -1,51 +1,42 @@
 {
-
   "manifest_version": 2,
   "name": "SendToFreebox",
-  "version": "1.1",
-  "description": "Send a url to freebox downloads",
-  "default_locale": "en",
+  "version": "2.0",
+  "description": "Envoie un lien vers la Freebox pour être téléchargé",
+  "default_locale": "fr",
   "browser_specific_settings": {
     "gecko": {
       "strict_min_version": "57.0"
     }
   },
-
   "icons": {
     "32": "icons/32_download.png",
     "48": "icons/48_download.png",
     "96": "icons/96_download.png",
     "128": "icons/128_download.png"
-},
-
-    "options_ui": {
-    "page": "popup/Configure_QNAP_Access.html"
   },
-
-"permissions": [
+  "options_ui": {
+    "page": "popup/popup.html"
+  },
+  "permissions": [
     "menus",
     "contextMenus",
     "storage",
     "http://*/",
     "https://*/"
-],
-
-"applications": {
+  ],
+  "applications": {
     "gecko": {
       "id": "SendToFreebox@SendToFreebox.com"
     }
   },
-
-
   "browser_action": {
     "default_icon": "icons/32_download.png",
     "default_title": "Send To Freebox",
-    "default_popup": "popup/Configure_QNAP_Access.html"
+    "default_popup": "popup/popup.html",
+    "browser_style": true
   },
-
-
-"background":  {
-  "scripts": ["SendLink.js", "jsSHA/sha1.js"]
-    }
-
+  "background":  {
+    "scripts": ["common.js", "SendLink.js", "sha1.js"]
+  }
 }
