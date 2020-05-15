@@ -47,10 +47,11 @@ async function openSession() {
   // erreur ?
   if (!data.success) {
     handleError(data.msg);
-    return;
+    return false;
   }
 
   _sessionToken = data.result.session_token;
+  return true;
 }
 
 // permet d'enregistrer les 'settings'
@@ -79,8 +80,11 @@ async function getListDownloads() {
   if (!data.success) {
     // a-t-on besoin de s'identifier ?
     if (data.error_code === "auth_required") {
-      await openSession();
-      return getListDownloads();
+      if (await openSession() === true) {
+        return getListDownloads();
+      } else {
+        throw data.msg;
+      }
     }
     else {
       handleError(data.msg);

@@ -119,9 +119,17 @@ async function requestAuthorization() {
 
 function handleError(err) {
   hideLoading();
+  console.log(err);
   let el = document.querySelector('#error');
   el.style.display='block';
   el.innerHTML = "Erreur : " + err;
+  // si le token de l'application n'est plus bon, on va proposer de recommencer
+  if (err === "Erreur d'authentification de l'application") {
+    if (_timeout) clearTimeout(_timeout); // stop showDownloads()
+    showElem('#step1');
+    showElem('#not-configured-yet');
+    hideElem('#configured');
+  }
 }
 
 // permet de cacher un élément en utilisant le selector 'id'
@@ -140,69 +148,72 @@ async function showDownloads() {
     clearTimeout(_timeout);
     _timeout=null;
   }
-  let downloads = await getListDownloads();
-  hideLoading();
-  if (!downloads) {
-    showElem('#none');
-    hideElem('#downloads');
-  } else {
-    hideElem('#none');
-    showElem('#downloads');
-    let html = [];
-    downloads.forEach(res => {
-      let status = "Inconnu";
-      switch(res.status) {
-        case "stopped": status="Pause"; break;
-        case "queued": status="En Attente"; break;
-        case "starting": status="Démarrage"; break;
-        case "downloading": status="Téléchargement"; break;
-        case "stopping": status="Arrêt en cours"; break;
-        case "error": status="Erreur"; break;
-        case "done": status="✓ Terminé"; break;
-        case "checking": status="Vérification"; break;
-        case "repairing": status="Réparation"; break;
-        case "extracting": status="Décompression"; break;
-        case "seeding": status="✓ Terminé"; break;
-        case "retry": status="Nouvel Essai"; break;
-      }
-      html.push(`<tr>
-        <td style="border-bottom-width:0">${res.name}</td>
-        <td style="border-bottom-width:0">${status==='Téléchargement'?'<div class="donut-spinner" style="border-width:2px"></div><span>Téléchargement</span>':status}</td>
-        <td style="border-bottom-width:0">${Math.round(res.rx_pct/100)}%
-      </tr>
-      <tr>
-        <td colspan="3" style="text-align:right">
-          ${res.status==='stopped'?'<button data-id="'+res.id+'" type="button" class="btn-play">⏯ Reprendre</button>':'<button data-id="'+res.id+'" type="button" class="btn-stop">⏯ Pause</button>'}
-          <button data-id="${res.id}" type="button" class="btn-end">Supprimer Tâche</button>
-        </td>
-      </tr>`);
-    });
-    document.querySelector('#downloads tbody').innerHTML = html.join('\n');
+  try {
+    let downloads = await getListDownloads();
+    hideLoading();
+    if (!downloads || downloads.length === 0) {
+      showElem('#none');
+      hideElem('#downloads');
+    } else {
+      hideElem('#none');
+      showElem('#downloads');
+      let html = [];
+      downloads.forEach(res => {
+        let status = "Inconnu";
+        switch(res.status) {
+          case "stopped": status="Pause"; break;
+          case "queued": status="En Attente"; break;
+          case "starting": status="Démarrage"; break;
+          case "downloading": status="Téléchargement"; break;
+          case "stopping": status="Arrêt en cours"; break;
+          case "error": status="Erreur"; break;
+          case "done": status="✓ Terminé"; break;
+          case "checking": status="Vérification"; break;
+          case "repairing": status="Réparation"; break;
+          case "extracting": status="Décompression"; break;
+          case "seeding": status="✓ Terminé"; break;
+          case "retry": status="Nouvel Essai"; break;
+        }
+        html.push(`<tr>
+          <td style="border-bottom-width:0">${res.name}</td>
+          <td style="border-bottom-width:0">${status==='Téléchargement'?'<div class="donut-spinner" style="border-width:2px"></div><span>Téléchargement</span>':status}</td>
+          <td style="border-bottom-width:0">${Math.round(res.rx_pct/100)}%
+        </tr>
+        <tr>
+          <td colspan="3" style="text-align:right">
+            ${res.status==='stopped'?'<button data-id="'+res.id+'" type="button" class="btn-play">⏯ Reprendre</button>':'<button data-id="'+res.id+'" type="button" class="btn-stop">⏯ Pause</button>'}
+            <button data-id="${res.id}" type="button" class="btn-end">Supprimer Tâche</button>
+          </td>
+        </tr>`);
+      });
+      document.querySelector('#downloads tbody').innerHTML = html.join('\n');
 
-    // les boutons pour reprendre
-    let btnPlay = document.querySelectorAll('.btn-play');
-    for (let i=0; i<btnPlay.length; i++) {
-      btnPlay[i].addEventListener("click", async event => {
-        updateTaskStatus(event.target.dataset.id, "downloading");
-      });
+      // les boutons pour reprendre
+      let btnPlay = document.querySelectorAll('.btn-play');
+      for (let i=0; i<btnPlay.length; i++) {
+        btnPlay[i].addEventListener("click", async event => {
+          updateTaskStatus(event.target.dataset.id, "downloading");
+        });
+      }
+      // les boutons pour mettre en pause
+      let btnPause = document.querySelectorAll('.btn-stop');
+      for (let i=0; i<btnPause.length; i++) {
+        btnPause[i].addEventListener("click", async event => {
+          updateTaskStatus(event.target.dataset.id, "stopped");
+        });
+      }
+      // les boutons pour fin de tâche
+      let btnEnd = document.querySelectorAll('.btn-end');
+      for (let i=0; i<btnEnd.length; i++) {
+        btnEnd[i].addEventListener("click", async event => {
+          updateTaskStatus(event.target.dataset.id, "end");
+        });
+      }
     }
-    // les boutons pour mettre en pause
-    let btnPause = document.querySelectorAll('.btn-stop');
-    for (let i=0; i<btnPause.length; i++) {
-      btnPause[i].addEventListener("click", async event => {
-        updateTaskStatus(event.target.dataset.id, "stopped");
-      });
-    }
-    // les boutons pour fin de tâche
-    let btnEnd = document.querySelectorAll('.btn-end');
-    for (let i=0; i<btnEnd.length; i++) {
-      btnEnd[i].addEventListener("click", async event => {
-        updateTaskStatus(event.target.dataset.id, "end");
-      });
-    }
+    _timeout = setTimeout(() => showDownloads(), 3000);
+  } catch(err) {
+    handleError(err);
   }
-  _timeout = await timeout(3000);
-  showDownloads();
 }
 
 // permet de mettre à jour le status d'une tâche

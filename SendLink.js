@@ -20,7 +20,6 @@ chrome.contextMenus.create({
     chrome.browserAction.setBadgeText({text:""});
     // on vérifie si l'addon est configuré
     chrome.storage.local.get(['settings'], function(res) {
-      console.log(res)
       if (!res.settings || !res.settings.appToken) {
         chrome.browserAction.setBadgeBackgroundColor({color:"#D32F2F"}); // red darken-1
         chrome.browserAction.setBadgeText({text:"❕"});
@@ -81,7 +80,8 @@ async function sendURL(uri) {
   chrome.browserAction.setBadgeText({text:"⏳"}); // 🔄
 
   // on ouvre une session pour avoir un token
-  await openSession();
+  let res = await openSession();
+  if (!res) return;
 
   let baseUrl = await getBaseUrl();
   // on envoie le lien dans la queue
