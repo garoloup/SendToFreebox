@@ -141,6 +141,20 @@ function showElem(id, type) {
   document.querySelector(id).style.display = type||'block';
 }
 
+/* +++++++++++++++++++++++++++++++++
+   return filename from URL
+*/
+function getFilenameOfURL(url) {
+  console.log("gFN URL="+url);
+
+  var flna = url.split("/");
+  var fileURL = flna[flna.length-1];
+
+  console.log("fileURL="+fileURL);
+
+  return(fileURL);
+}
+
 var _timeout;
 async function showDownloads() {
   // pour éviter trop d'appels à cette fonction
@@ -160,9 +174,10 @@ async function showDownloads() {
       let html = [];
       downloads.forEach(res => {
         let status = "Inconnu";
+        let shortFilename = res.name;
         switch(res.status) {
           case "stopped": status="Pause"; break;
-          case "queued": status="En Attente"; break;
+          case "queued": status="En Attente"; shortFilename = getFilenameOfURL(res.name) ; break;
           case "starting": status="Démarrage"; break;
           case "downloading": status="Téléchargement"; break;
           case "stopping": status="Arrêt en cours"; break;
@@ -175,7 +190,7 @@ async function showDownloads() {
           case "retry": status="Nouvel Essai"; break;
         }
         html.push(`<tr>
-          <td style="border-bottom-width:0">${res.name}</td>
+          <td style="border-bottom-width:0">${shortFilename}</td>
           <td style="border-bottom-width:0">${status==='Téléchargement'?'<div class="donut-spinner" style="border-width:2px"></div><span>Téléchargement</span>':status}</td>
           <td style="border-bottom-width:0">${Math.round(res.rx_pct/100)}%
         </tr>
