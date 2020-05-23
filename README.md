@@ -1,6 +1,6 @@
 # SendToFreebox
 
-Cette extension permet les fonctions suivantes:
+Cette extension permet les fonctions suivantes :
 
   - Clic droit sur une URL pour envoyer vers l'appli _Téléchargement_ du Freebox Serveur
   - Lister les téléchargements en cours
@@ -12,12 +12,12 @@ Cette extension permet les fonctions suivantes:
 
 À savoir :
 
-  - Les droits de cette application sont les droits par défaut donnés par Free, et il n'est pas possible de les modifier de façon programmatique… Cela signifie qu'on ne peut pas demander moins de droits !
-  - L'application a des droits tels que "Accès au journal d'appels" et "Accès à la base de contacts de la Freebox" : en aucun cas ces informations sont utilisées par l'extension ! Vous pouvez tout à fait décocher ces cases.
+  - Les permissions de cette application sont celles par défaut, données par Free, et il n'est pas possible de les modifier de façon programmatique… Cela signifie qu'on ne peut pas en demander moins !
+  - L'application a des droits tels que "Accès au journal d'appels" et "Accès à la base de contacts de la Freebox" : en aucun cas ces informations sont utilisées par l'extension !
 
 En théorie les seuls droits nécessaires sont : "Accès au gestionnaire de téléchargements" et "Accès aux fichiers de la Freebox". Vous pouvez donc décocher les autres cases.
 
-Concernant les droits donnés par défaut à l'application, je vous invite à aller vous plaindre sur le bugtracker de Free : https://dev.freebox.fr/bugs/task/30558
+Concernant ce manque de choix pour l'application, vous pouvez aller vous plaindre sur le bugtracker de Free : https://dev.freebox.fr/bugs/task/30558
 
 ## Questions
 
@@ -29,12 +29,12 @@ Afin de tester ce code dans votre navigateur sans passer par le store, vous deve
 
 Dézipper le répertoire téléchargé, puis, selon votre navigateur :
   - Pour Firefox :
-    - Ouvrir [about:debugging](about:debugging)
+    - Ouvrir **about:debugging**
     - Cliquer sur **"Ce Firefox"**
     - Cliquer sur **"Charger un module complémentaire temporaire…"**
     - Sélectionner le fichier `manifest.json`
   - Pour Chrome :
-    - Ouvrir [chrome://extensions/](chrome://extensions/)
+    - Ouvrir **chrome://extensions/**
     - Cliquer sur **"Mode Développeur"** (en haut à droite)
     - Cliquer sur **"Charger l'extension non empaquetée"**
     - Sélectionner le répertoire téléchargé précédemment
