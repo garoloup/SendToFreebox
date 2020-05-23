@@ -2,34 +2,39 @@
 
 Cette extension permet les fonctions suivantes:
 
-    Clic droit sur une URL pour envoyer vers l'appli Téléchargement du Freebox Serveur.
-    Réaliser l'association de l'extension avec votre freebox serveur en appuyant sur le bouton associate
-    Visualiser les réglages de connection avec votre freebox serveur
-    Teste l'URL par défault https://mafreebox.freebox.fr et préconfigure les réglages
-    Lister vos téléchargements
-    Retirer un téléchargement en effacant le fichier présent
+  - Clic droit sur une URL pour envoyer vers l'appli _Téléchargement_ du Freebox Serveur
+  - Lister les téléchargements en cours
+  - Gestion simple des téléchargements
 
+## Droits sur FreeboxOS
 
-Note :
-Il existe un tuto à https://forum.universfreebox.com/viewtopic.php?p=682468#682468
+À noter que cette extension va ajouter une application sur votre Freebox (http://mafreebox.freebox.fr > "Paramètres de la Freebox" > "Mode Avancé" > "Gestion des Accès" > "Applications") nommée "SendToFreebox 4 Extension".
 
-Pour réaliser l'association, il faut ajouter plusieurs préconditions.
+À savoir :
 
-    Ajouter le certificat de votre freebox serveur à votre navigateur soit "à la main" soit en saisissant l'URL https://mafreebox.freebox.fr dans la barre d'adresse et confirmant son ajout malgré la mise en garde
-    Se delogguer de l'interface Freebox OS (Une seule connection possible à la fois sur le même navigateur peut etre).
+  - Les droits de cette application sont les droits par défaut donnés par Free, et il n'est pas possible de les modifier de façon programmatique… Cela signifie qu'on ne peut pas demander moins de droits !
+  - L'application a des droits tels que "Accès au journal d'appels" et "Accès à la base de contacts de la Freebox" : en aucun cas ces informations sont utilisées par l'extension ! Vous pouvez tout à fait décocher ces cases.
 
+En théorie les seuls droits nécessaires sont : "Accès au gestionnaire de téléchargements" et "Accès aux fichiers de la Freebox". Vous pouvez donc décocher les autres cases.
 
-Si ces conditions sont remplies, vous devriez voir apparaitre le bouton Associate. Il suffit alors de confirmer cet appairage sur le freebox serveur directement.
+Concernant les droits donnés par défaut à l'application, je vous invite à aller vous plaindre sur le bugtracker de Free : https://dev.freebox.fr/bugs/task/30558
 
-________________________________________________________________________________________
-Send URL and manage download on freebox from browser
+## Questions
 
-    Detect freebox on local network (using mafreebox.freebox.fr)
-    Associate extension to freebox
-    Use right click on URL to send it to freebox download app
-    List & remove current downloads
-    Test connection settings
+Si vous avez des questions, des problèmes ou des demandes d'amélioration, merci de soumettre une _issue_ sur la [page dédiée](https://github.com/garoloup/SendToFreebox/issues).
 
-Note : Add your Freebox URL to your approved browser certificates by entering following Freebox address (https://mafreebox.freebox.fr) into your browser address bar.
+## Développement
 
-Don't forget to confirm acceptance in browser warning page
+Afin de tester ce code dans votre navigateur sans passer par le store, vous devez télécharger le répertoire en cliquant sur le bouton "Clone or download", puis "Download Zip".
+
+Dézipper le répertoire téléchargé, puis, selon votre navigateur :
+  - Pour Firefox :
+    - Ouvrir [about:debugging](about:debugging)
+    - Cliquer sur **"Ce Firefox"**
+    - Cliquer sur **"Charger un module complémentaire temporaire…"**
+    - Sélectionner le fichier `manifest.json`
+  - Pour Chrome :
+    - Ouvrir [chrome://extensions/](chrome://extensions/)
+    - Cliquer sur **"Mode Développeur"** (en haut à droite)
+    - Cliquer sur **"Charger l'extension non empaquetée"**
+    - Sélectionner le répertoire téléchargé précédemment
