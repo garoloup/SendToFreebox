@@ -44,6 +44,7 @@ function run() {
       // non pas encore configuré
       showElem('#step1');
       showElem('#not-configured-yet');
+      document.getElementById('server-url').value = _settings.domain;
       hideLoading();
     } else {
       // déja configuré
@@ -57,6 +58,7 @@ document.addEventListener('DOMContentLoaded', run);
 
 // on demande l'autorisation au serveur
 async function requestAuthorization() {
+  await setSettings({domain: document.getElementById('server-url').value })
   let baseUrl = await getBaseUrl();
   let response = await fetch(baseUrl+"/login/authorize/", {
     credentials:'omit',

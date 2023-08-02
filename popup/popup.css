@@ -64,7 +64,15 @@ body {
 }
 
 /* réduit la taille des H1 */
-h1 { font-size:18px !important }
+h1 {
+  font-size:18px !important
+}
+
+/* config */
+#server-url {
+  display: block;
+  width: 100%;
+}
 
 /* downlaods */
 #downloads {
@@ -72,14 +80,11 @@ h1 { font-size:18px !important }
   border-radius: 5px;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
-  margin: 1em 0;
-  padding: 1em;
   position: relative;
   font-size: 1em;
   border-collapse: collapse;
   width: 100%;
   font-variant-numeric: tabular-nums;
-  white-space: nowrap;
 }
 #downloads caption { text-align:left }
 
