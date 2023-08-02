@@ -7,7 +7,8 @@ var _app = {
 // settings
 var _settings = {
   appToken: "", // le app_token
-  downloadDir: "" // le répertoire du téléchargement
+  downloadDir: "", // le répertoire du téléchargement
+  domain: "http://mafreebox.freebox.fr", // le domaine de la freebox
 }
 // va stocker le token de session
 var _sessionToken = null;
@@ -17,9 +18,10 @@ var _baseUrl = "";
 // Permet de trouver l'URL de base pour les API
 async function getBaseUrl() {
   if (!_baseUrl) {
-    let response = await fetch("http://mafreebox.freebox.fr/api_version");
-    let data = await response.json();
-    _baseUrl = "http://mafreebox.freebox.fr"+data.api_base_url+"v"+data.api_version.split(".")[0];
+    const domain = _settings.domain || 'http://mafreebox.freebox.fr';
+    const response = await fetch(`${domain}/api_version`);
+    const data = await response.json();
+    _baseUrl = `${domain}${data.api_base_url}v${data.api_version.split(".")[0]}`;
   }
   return Promise.resolve(_baseUrl);
 }
